@@ -47,6 +47,16 @@ User.create = (data, result) => {
     });
 };
 
+User.updateProfile = (userData, result) => {
+  User.findByIdAndUpdate(userData.id, userData, { new: true })
+    .then((updatedProfile) => {
+      return result(null, responseFormat.format(updatedProfile, true));
+    })
+    .catch((err) => {
+      return result(responseFormat.format(err, false), null);
+    });
+};
+
 User.selectById = (userId, result) => {
   User.findById(userId, (err, user) => {
     if (err) return result(responseFormat.format(err, false), null);

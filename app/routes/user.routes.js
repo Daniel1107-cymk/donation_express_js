@@ -9,6 +9,9 @@ module.exports = (app) => {
   // create a new user
   app.post(`${apiPrefix}/register`, users.create);
 
+  // update profile
+  app.put(`${apiPrefix}/update-profile/:userId`, users.updateProfile);
+
   // find single user by id
   app.get(`${apiPrefix}/users/:userId`, users.findById);
 

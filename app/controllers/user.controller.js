@@ -8,6 +8,14 @@ exports.create = (req, res) => {
   });
 };
 
+// update profile
+exports.updateProfile = (req, res) => {
+  User.updateProfile({ id: req.params.userId, ...req.body }, (err, data) => {
+    if (err) return res.status(400).send("profile cannot be updated");
+    return res.send(data);
+  });
+};
+
 // find single user by id
 exports.findById = (req, res) => {
   User.selectById(req.params.userId, (err, data) => {
