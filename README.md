@@ -1,4 +1,4 @@
-##instalation steps
+***instalation steps***
 
 1. npm install
 2. cp .env.example .env
