@@ -7,7 +7,7 @@ module.exports = (app) => {
   const users = require("../controllers/user.controller.js");
 
   // create a new user
-  app.post(`${apiPrefix}/users`, users.create);
+  app.post(`${apiPrefix}/register`, users.create);
 
   // find single user by id
   app.get(`${apiPrefix}/users/:userId`, users.findById);

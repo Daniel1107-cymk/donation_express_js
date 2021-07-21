@@ -2,12 +2,6 @@ const User = require("../models/user.model");
 
 // create
 exports.create = (req, res) => {
-  if (Object.keys(req.body).length < 1) {
-    res.status(400).send({
-      message: "Content can not be empty!",
-    });
-  }
-
   const userData = new User({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -17,7 +11,7 @@ exports.create = (req, res) => {
 
   User.create(userData, (err, data) => {
     if (err) {
-      res.status(500).send(err);
+      res.status(500).send(err.error);
     } else res.send(data);
   });
 };
@@ -28,6 +22,7 @@ exports.findById = (req, res) => {
     if (err) {
       if (err.find === "not found") {
         res.status(404).send(err);
+        return;
       }
       res.status(500).send(err);
     } else res.send(data);
