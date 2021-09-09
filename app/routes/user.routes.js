@@ -7,6 +7,8 @@ const validate = require("../validator/auth");
 
 module.exports = (app) => {
   const users = require("../controllers/user.controller.js");
+  // login
+  app.post(`${apiPrefix}/login`, validate.login, users.login);
   // create a new user
   app.post(`${apiPrefix}/register`, validate.signup, users.create);
   // update profile

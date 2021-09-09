@@ -41,10 +41,7 @@ let UserModel = {
   create: (userData, result) => {
     const user = new User({
       email: userData.email,
-      password:
-        userData.password !== undefined
-          ? byscrypt.hashSync(userData.password, 10)
-          : null,
+      password: byscrypt.hashSync(userData.password, 10),
       first_name: userData.first_name,
       last_name: userData.last_name,
       phone_number: userData.phone_number,
@@ -61,6 +58,41 @@ let UserModel = {
         return result(responseFormat.format(err, false), null);
       });
   },
+
+  login: (userData, result) => {
+    User.findOne(
+      {
+        email: userData.email,
+      },
+      "-_id -__v"
+    )
+      .then(async (user) => {
+        if (user === null) {
+          const err = [
+            { msg: "User not found", param: "email", location: "body" },
+          ];
+          return result(responseFormat.format(err, false), null);
+        } else {
+          const match = byscrypt.compareSync(userData.password, user.password);
+          if (match) {
+            return result(null, responseFormat.format(user, true));
+          } else {
+            const err = [
+              {
+                msg: "Incorrect password",
+                param: "password",
+                location: "body",
+              },
+            ];
+            return result(responseFormat.format(err, false), null);
+          }
+        }
+      })
+      .catch((err) => {
+        return result(responseFormat.format(err, false), null);
+      });
+  },
+
   updateProfile: (userData, result) => {
     User.findByIdAndUpdate(userData.id, userData, { new: true })
       .then((updatedProfile) => {
@@ -70,6 +102,7 @@ let UserModel = {
         return result(responseFormat.format(err, false), null);
       });
   },
+
   selectById: (userId, result) => {
     User.findById(userId, (err, user) => {
       if (err) return result(responseFormat.format(err, false), null);
@@ -77,6 +110,7 @@ let UserModel = {
       return result(null, responseFormat.format(user, true));
     });
   },
+
   selectAll: (result) => {
     User.find({}, "-_id -__v", (err, user) => {
       if (err) return result(responseFormat.format(err, false), null);

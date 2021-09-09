@@ -8,6 +8,13 @@ let UserController = {
       return res.send(data);
     });
   },
+  // login
+  login: (req, res) => {
+    User.login(req.body, (err, data) => {
+      if (err) return res.status(404).send(err.error);
+      return res.send(data);
+    });
+  },
   // update profile
   updateProfile: (req, res) => {
     User.updateProfile({ id: req.params.userId, ...req.body }, (err, data) => {
