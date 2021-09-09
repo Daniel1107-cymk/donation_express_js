@@ -2,11 +2,13 @@
 require("dotenv").config();
 // api prefix
 const apiPrefix = process.env.API_PREFIX;
+// validator
+const validate = require("../validator/auth");
 
 module.exports = (app) => {
   const users = require("../controllers/user.controller.js");
   // create a new user
-  app.post(`${apiPrefix}/register`, users.create);
+  app.post(`${apiPrefix}/register`, validate.signup, users.create);
   // update profile
   app.put(`${apiPrefix}/update-profile/:userId`, users.updateProfile);
   // find single user by id

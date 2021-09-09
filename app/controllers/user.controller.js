@@ -1,7 +1,7 @@
 const User = require("../models/user.model");
 
 let UserController = {
-  // update profile
+  // create user
   create: (req, res) => {
     User.create(req.body, (err, data) => {
       if (err) return res.status(500).send(err.error);

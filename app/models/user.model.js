@@ -1,7 +1,16 @@
 const mongoose = require("mongoose");
 const responseFormat = require("../helpers/response.format");
+const byscrypt = require("bcrypt");
 
 const userSchema = mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
   first_name: {
     type: String,
     required: true,
@@ -31,10 +40,16 @@ const User = mongoose.model("users", userSchema);
 let UserModel = {
   create: (userData, result) => {
     const user = new User({
+      email: userData.email,
+      password:
+        userData.password !== undefined
+          ? byscrypt.hashSync(userData.password, 10)
+          : null,
       first_name: userData.first_name,
       last_name: userData.last_name,
-      full_address: userData.full_address,
       phone_number: userData.phone_number,
+      full_address: userData.full_address,
+      role: userData.role,
       google_id: userData.google_id,
     });
     user
@@ -63,7 +78,7 @@ let UserModel = {
     });
   },
   selectAll: (result) => {
-    User.find({}, (err, user) => {
+    User.find({}, "-_id -__v", (err, user) => {
       if (err) return result(responseFormat.format(err, false), null);
 
       return result(null, responseFormat.format(user, true));
