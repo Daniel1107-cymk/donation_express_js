@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const connection = require("./app/models/db");
+// env
+require("dotenv").config();
+const PORT = process.env.PORT || 3000;
 // middleware
 app.use(express.json());
 app.use(morgan("tiny"));
@@ -11,4 +14,4 @@ connection;
 
 require("./app/routes/user.routes")(app);
 
-app.listen("3000", () => {});
+app.listen(PORT, () => {});
