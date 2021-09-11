@@ -12,6 +12,7 @@ app.use(morgan("tiny"));
 // connect to mongodb
 connection;
 
-require("./app/routes/user.routes")(app);
+require("./app/routes/user")(app);
+require("./app/routes/announcement")(app);
 
 app.listen(PORT, () => {});

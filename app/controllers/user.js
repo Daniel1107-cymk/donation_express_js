@@ -1,20 +1,11 @@
 const byscrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-// env
-require("dotenv").config();
-const apiPrefix = process.env.API_PREFIX;
-// middleware
-const auth = require("../middleware/auth");
+const User = require("../models/user");
 // helper
-const validate = require("../validator/auth");
 const generate = require("../helpers/generate");
 const responseFormat = require("../helpers/response.format");
 
-module.exports = (app) => {
-  const User = require("../models/user.model");
-
-  // login
-  app.post(`${apiPrefix}/login`, validate.login, async (req, res) => {
+const UserController = {
+  login: async (req, res) => {
     try {
       const body = req.body;
 
@@ -38,12 +29,12 @@ module.exports = (app) => {
         return res.status(400).send(responseFormat.format(err, false));
       }
     } catch (err) {
-      return res.status(500).json(responseFormat.format(err, false));
+      return res
+        .status(500)
+        .json(responseFormat.format(err?.errors ?? err, false));
     }
-  });
-
-  // login with google
-  app.post(`${apiPrefix}/google-signin`, async (req, res) => {
+  },
+  googleSignIn: async (req, res) => {
     try {
       const body = req.body;
 
@@ -91,12 +82,12 @@ module.exports = (app) => {
         return res.status(200).json(responseFormat.format(user, true));
       }
     } catch (err) {
-      return res.status(500).json(responseFormat.format(err, false));
+      return res
+        .status(500)
+        .json(responseFormat.format(err?.errors ?? err, false));
     }
-  });
-
-  // sign up
-  app.post(`${apiPrefix}/register`, validate.signup, async (req, res) => {
+  },
+  signup: async (req, res) => {
     try {
       const body = req.body;
       // check if user exist
@@ -109,7 +100,9 @@ module.exports = (app) => {
             location: "body",
           },
         ];
-        return res.status(409).send(responseFormat.format(err, false));
+        return res
+          .status(500)
+          .json(responseFormat.format(err?.errors ?? err, false));
       }
       // create user
       const user = await User.create({
@@ -130,11 +123,12 @@ module.exports = (app) => {
 
       return res.status(200).json(responseFormat.format(user, true));
     } catch (err) {
-      return res.status(500).json(responseFormat.format(err, false));
+      return res
+        .status(500)
+        .json(responseFormat.format(err?.errors ?? err, false));
     }
-  });
-  // update profile
-  app.put(`${apiPrefix}/update-profile/:userId`, auth, async (req, res) => {
+  },
+  updateProfile: async (req, res) => {
     User.findByIdAndUpdate(req.params.userId, req.body, { new: true })
       .then((updatedProfile) => {
         return res
@@ -144,21 +138,21 @@ module.exports = (app) => {
       .catch((err) => {
         return res.status(500).json(responseFormat.format(err, false));
       });
-  });
-  // find single user by id
-  app.get(`${apiPrefix}/users/:userId`, auth, async (req, res) => {
+  },
+  getUser: async (req, res) => {
     User.findById(req.params.userId, (err, user) => {
       if (err) return res.status(500).json(responseFormat.format(err, false));
 
       return res.status(200).json(responseFormat.format(user, true));
     });
-  });
-  // select all user
-  app.get(`${apiPrefix}/users`, auth, async (req, res) => {
+  },
+  getAllUser: async (req, res) => {
     User.find({}, "-_id -__v", (err, user) => {
       if (err) return res.status(200).json(responseFormat.format(err, false));
 
       return res.status(200).json(responseFormat.format(user, true));
     });
-  });
+  },
 };
+
+module.exports = UserController;
