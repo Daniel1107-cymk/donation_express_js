@@ -7,6 +7,7 @@ const apiPrefix = process.env.API_PREFIX;
 const auth = require("../middleware/auth");
 // helper
 const validate = require("../validator/auth");
+const generate = require("../helpers/generate");
 const responseFormat = require("../helpers/response.format");
 
 module.exports = (app) => {
@@ -19,15 +20,12 @@ module.exports = (app) => {
 
       const user = await User.findOne({ email: body.email }, "-_id -__v");
       if (user && byscrypt.compareSync(body.password, user.password)) {
-        // create token
-        const { email } = body;
-        const token = jwt.sign(
-          { user_id: user._id, email },
-          process.env.TOKEN_SECRET,
-          { expiresIn: "1 day" }
-        );
         // save user token
-        user.token = token;
+        user.token = await generate.token({
+          userId: user._id,
+          email: body.email,
+        });
+
         res.status(200).json(responseFormat.format(user, true));
       } else {
         const err = [
@@ -44,7 +42,60 @@ module.exports = (app) => {
     }
   });
 
-  // create a new user
+  // login with google
+  app.post(`${apiPrefix}/google-signin`, async (req, res) => {
+    try {
+      const body = req.body;
+
+      const user = await User.findOne(
+        { email: body.email, google_id: body.google_id },
+        "-_id -__v"
+      );
+      if (user) {
+        // save user token
+        user.token = await generate.token({
+          userId: user._id,
+          email: body.email,
+        });
+
+        res.status(200).json(responseFormat.format(user, true));
+      } else {
+        // check if user exist
+        const oldUser = await User.findOne({ email: body.email });
+        if (oldUser) {
+          const err = [
+            {
+              msg: "Email already exist",
+              param: "password",
+              location: "body",
+            },
+          ];
+          return res.status(409).send(responseFormat.format(err, false));
+        }
+        const user = await User.create({
+          email: body.email,
+          password: byscrypt.hashSync(generate.randomPassword(8), 10),
+          first_name: body.first_name,
+          last_name: body.last_name,
+          phone_number: body.phone_number,
+          full_address: body.full_address,
+          role: body.role,
+          google_id: body.google_id,
+        });
+        // save user token
+        user.token = await generate.token({
+          userId: user._id,
+          email: body.email,
+        });
+
+        return res.status(200).json(responseFormat.format(user, true));
+      }
+    } catch (err) {
+      return res.status(500).json(responseFormat.format(err, false));
+    }
+  });
+
+  // sign up
   app.post(`${apiPrefix}/register`, validate.signup, async (req, res) => {
     try {
       const body = req.body;
@@ -71,15 +122,11 @@ module.exports = (app) => {
         role: body.role,
         google_id: body.google_id,
       });
-      // create token
-      const { email } = body;
-      const token = jwt.sign(
-        { user_id: user._id, email },
-        process.env.TOKEN_SECRET,
-        { expiresIn: "1 day" }
-      );
       // save user token
-      user.token = token;
+      user.token = await generate.token({
+        userId: user._id,
+        email: body.email,
+      });
 
       return res.status(200).json(responseFormat.format(user, true));
     } catch (err) {
