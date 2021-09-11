@@ -13,10 +13,8 @@ exports.randomPassword = async (length) => {
 };
 
 exports.token = async ({ userId, email }) => {
-  const token = jwt.sign(
-    { user_id: userId, email },
-    process.env.TOKEN_SECRECT,
-    { expiresIn: "1 day" }
-  );
+  const token = jwt.sign({ user_id: userId, email }, process.env.TOKEN_SECRET, {
+    expiresIn: "1 day",
+  });
   return token;
 };
