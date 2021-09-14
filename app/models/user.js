@@ -11,6 +11,7 @@ const userSchema = mongoose.Schema(
     role: { type: String, default: 0 },
     google_id: { type: String },
     token: { type: String },
+    donations: [{ type: mongoose.Schema.Types.ObjectId, ref: "donations" }],
   },
   { timestamps: { createdAt: "created_at" } }
 );
