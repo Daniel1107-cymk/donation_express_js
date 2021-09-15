@@ -12,6 +12,7 @@ const userSchema = mongoose.Schema(
     google_id: { type: String },
     token: { type: String },
     donations: [{ type: mongoose.Schema.Types.ObjectId, ref: "donations" }],
+    addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: "addresses" }],
   },
   { timestamps: { createdAt: "created_at" } }
 );
