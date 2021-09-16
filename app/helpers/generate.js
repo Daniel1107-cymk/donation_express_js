@@ -1,7 +1,7 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-exports.randomPassword = async (length) => {
+exports.randomPassword = (length) => {
   var result = "";
   var characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -12,7 +12,7 @@ exports.randomPassword = async (length) => {
   return result;
 };
 
-exports.token = async ({ userId, email }) => {
+exports.token = ({ userId, email }) => {
   const token = jwt.sign({ user_id: userId, email }, process.env.TOKEN_SECRET, {
     expiresIn: "1 day",
   });

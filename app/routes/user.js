@@ -6,13 +6,17 @@ const auth = require("../middleware/auth");
 // controller
 const User = require("../controllers/user");
 // helper
-const validate = require("../validator/auth");
+const validate = require("../validator/user");
 
 module.exports = (app) => {
   // login
   app.post(`${apiPrefix}/login`, validate.login, User.login);
   // login with google
-  app.post(`${apiPrefix}/google-signin`, User.googleSignIn);
+  app.post(
+    `${apiPrefix}/google-signin`,
+    validate.google_signin,
+    User.googleSignIn
+  );
   // sign up
   app.post(`${apiPrefix}/register`, validate.signup, User.signup);
   // update profile
