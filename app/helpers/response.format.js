@@ -6,7 +6,7 @@ exports.format = (data, success) => {
     };
   }
   return {
-    error: data,
+    errors: data,
     success: success,
   };
 };

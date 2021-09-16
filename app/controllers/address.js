@@ -1,16 +1,20 @@
-const Address = require("../models/donation");
+const Address = require("../models/address");
 const User = require("../models/user");
 // helper
 const responseFormat = require("../helpers/response.format");
 
 const AddressController = {
-  create: async (req, res) => {
+  create: (req, res) => {
     const body = req.body;
     const currentUserEmail = req.user.email;
-    const user = await User.findOne({ email: currentUserEmail });
 
-    try {
-      const address = await Address.create({
+    User.findOne({ email: currentUserEmail }).exec((err, user) => {
+      if (err)
+        return res
+          .status(404)
+          .json(responseFormat.format(err?.errors ?? err, false));
+
+      const address = Address({
         user_id: user._id,
         address: body.address,
         city: body.city,
@@ -19,62 +23,67 @@ const AddressController = {
         latitude: body.latidude,
       });
 
-      user.addresses.push(address);
-      user.save();
+      address.save((err, address) => {
+        if (err)
+          return res
+            .status(422)
+            .json(responseFormat.format(err?.errors ?? err, false));
 
-      return res.status(200).json(responseFormat.format(address, true));
-    } catch (err) {
-      return res
-        .status(500)
-        .json(responseFormat.format(err?.errors ?? err, false));
-    }
+        user.addresses.push(address);
+        user.save((err) => {
+          if (err)
+            return res
+              .status(422)
+              .json(responseFormat.format(err?.errors ?? err, false));
+        });
+        return res.status(200).json(responseFormat.format(address, true));
+      });
+    });
   },
-  update: async (req, res) => {
-    try {
-      const address = await Address.findByIdAndUpdate(
-        req.params.addressId,
-        req.body,
-        {
-          new: true,
-        }
-      );
+  update: (req, res) => {
+    Address.findByIdAndUpdate(
+      req.params.addressId,
+      req.body,
+      {
+        new: true,
+      },
+      (err, address) => {
+        if (err)
+          return res
+            .status(422)
+            .json(responseFormat.format(err?.errors ?? err, false));
+        return res.status(200).json(responseFormat.format(address, true));
+      }
+    );
+  },
+  delete: (req, res) => {
+    Address.deleteOne({ _id: req.params.addressId }, (err) => {
+      if (err)
+        return res
+          .status(422)
+          .json(responseFormat.format(err?.errors ?? err, false));
 
-      return res.status(200).json(responseFormat.format(address, true));
-    } catch (err) {
-      return res
-        .status(422)
-        .json(responseFormat.format(err?.errors ?? err, false));
-    }
-  },
-  delete: async (req, res) => {
-    try {
-      const address = await Address.deleteOne({ _id: req.params.addressId });
       const msg = [
         {
-          msg: "Successfully delete",
+          msg: "Address successfully deleted",
         },
       ];
       return res.status(200).json(responseFormat.format(msg, true));
-    } catch (err) {
-      return res
-        .status(400)
-        .json(responseFormat.format(err?.errors ?? err, false));
-    }
+    });
   },
-  getAllAddress: async (req, res) => {
-    try {
-      const user = await User.findOne({ email: req.user.email });
-      const allUserAddress = await Address.find(
-        { user_id: user._id },
-        "-_id, -__v"
-      );
+  getAllAddress: (req, res) => {
+    User.findOne({ email: req.user.email })
+      .populate("addresses")
+      .exec((err, user) => {
+        if (err)
+          return res
+            .status(400)
+            .json(responseFormat.format(err?.errors ?? err, false));
 
-      return res.status(200).json(responseFormat.format(allUserAddress, true));
-    } catch (err) {
-      return res
-        .status(400)
-        .json(responseFormat.format(err?.errors ?? err, false));
-    }
+        return res
+          .status(200)
+          .json(responseFormat.format(user.addresses, true));
+      });
   },
 };
 

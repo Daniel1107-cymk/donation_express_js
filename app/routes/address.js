@@ -19,7 +19,12 @@ module.exports = (app) => {
     Address.create
   );
   // update
-  app.put(`${apiPrefix}update-address/:addressId`, auth, Address.update);
+  app.put(
+    `${apiPrefix}/update-address/:addressId`,
+    auth,
+    validate.createAddress,
+    Address.update
+  );
   // delete
-  app.delete(`${apiPrefix}/delete-address/:addressId`, auth, Address.create);
+  app.delete(`${apiPrefix}/delete-address/:addressId`, auth, Address.delete);
 };

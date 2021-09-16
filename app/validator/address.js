@@ -6,9 +6,11 @@ exports.createAddress = [
   check("city", "Is required").notEmpty(),
   check("zipcode", "Is required").notEmpty(),
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json(responseFormat.format(errors));
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+      return res
+        .status(422)
+        .json(responseFormat.format(error?.errors ?? error));
     } else next();
   },
 ];
