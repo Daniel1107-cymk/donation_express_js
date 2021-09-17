@@ -13,7 +13,7 @@ module.exports = (app) => {
   // create
   app.post(`${apiPrefix}/faq`, auth, validate.faqData, Faq.create);
   // update
-  app.put(`${apiPrefix}/faq/:faqId`, auth, Faq.update);
+  app.put(`${apiPrefix}/faq/:faqId`, auth, validate.faqData, Faq.update);
   // delete
   app.delete(`${apiPrefix}/faq/:faqId`, auth, Faq.delete);
 };
