@@ -20,7 +20,7 @@ module.exports = (app) => {
   // sign up
   app.post(`${apiPrefix}/register`, validate.signup, User.signup);
   // update profile
-  app.put(`${apiPrefix}/update-profile/:userId`, auth, User.updateProfile);
+  app.put(`${apiPrefix}/update-profile`, auth, User.updateProfile);
   // find single user by id
   app.get(`${apiPrefix}/users/:userId`, auth, User.getUser);
   // select all user
