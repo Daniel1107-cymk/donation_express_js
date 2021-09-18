@@ -1,20 +1,18 @@
 const Address = require("../models/address");
 const User = require("../models/user");
 // helper
+const asyncWrap = require("../helpers/async");
 const responseFormat = require("../helpers/response.format");
 
 const AddressController = {
-  create: (req, res) => {
+  create: asyncWrap(async (req, res) => {
     const body = req.body;
     const currentUserEmail = req.user.email;
+    let msg;
 
-    User.findOne({ email: currentUserEmail }).exec((err, user) => {
-      if (err)
-        return res
-          .status(404)
-          .json(responseFormat.format(err?.errors ?? err, false));
-
-      const address = Address({
+    const user = await User.findOne({ email: currentUserEmail });
+    if (user) {
+      const address = await Address.create({
         user_id: user._id,
         address: body.address,
         city: body.city,
@@ -22,69 +20,63 @@ const AddressController = {
         longitude: body.longitude,
         latitude: body.latidude,
       });
-
-      address.save((err, address) => {
-        if (err)
-          return res
-            .status(422)
-            .json(responseFormat.format(err?.errors ?? err, false));
-
+      if (address) {
         user.addresses.push(address);
-        user.save((err) => {
-          if (err)
-            return res
-              .status(422)
-              .json(responseFormat.format(err?.errors ?? err, false));
-        });
-        return res.status(200).json(responseFormat.format(address, true));
-      });
-    });
-  },
-  update: (req, res) => {
-    Address.findByIdAndUpdate(
-      req.params.addressId,
-      req.body,
-      {
-        new: true,
-      },
-      (err, address) => {
-        if (err)
-          return res
-            .status(422)
-            .json(responseFormat.format(err?.errors ?? err, false));
-        return res.status(200).json(responseFormat.format(address, true));
+        await user.save();
+        msg = {
+          msg: "Successfully added",
+        };
+        return res.status(200).json(responseFormat.format([msg], true));
       }
-    );
-  },
-  delete: (req, res) => {
-    Address.deleteOne({ _id: req.params.addressId }, (err) => {
-      if (err)
-        return res
-          .status(422)
-          .json(responseFormat.format(err?.errors ?? err, false));
-
-      const msg = [
-        {
-          msg: "Address successfully deleted",
-        },
-      ];
-      return res.status(200).json(responseFormat.format(msg, true));
-    });
-  },
-  getAllAddress: (req, res) => {
-    User.findOne({ email: req.user.email })
-      .populate("addresses")
-      .exec((err, user) => {
-        if (err)
-          return res
-            .status(400)
-            .json(responseFormat.format(err?.errors ?? err, false));
-
-        return res
-          .status(200)
-          .json(responseFormat.format(user.addresses, true));
-      });
-  },
+    } else {
+      msg = {
+        msg: "Unauthorize",
+      };
+      return res.status(401).json(responseFormat.format([msg], true));
+    }
+  }),
+  update: asyncWrap(async (req, res) => {
+    const address = await Address.findById(req.params.addressId);
+    if (address) {
+      const updatedAddress = await Address.findByIdAndUpdate(
+        req.params.addressId,
+        { useFindAndModify: false, new: true }
+      );
+      msg = {
+        msg: "Address successfully updated",
+      };
+      return res.status(200).json(responseFormat.format([msg], true));
+    }
+    msg = {
+      msg: "No address found",
+    };
+    return res.status(400).json(responseFormat.format([msg], false));
+  }),
+  delete: asyncWrap(async (req, res) => {
+    const address = await Address.findById(req.params.addressId);
+    if (address) {
+      address.delete();
+      msg = {
+        msg: "Successfully delete",
+      };
+      return res.status(200).json(responseFormat.format([msg], true));
+    }
+    msg = {
+      msg: "No address found",
+    };
+    return res.status(400).json(responseFormat.format([msg], false));
+  }),
+  getAllAddress: asyncWrap(async (req, res) => {
+    const user = User.findOne({ email: req.user.email });
+    if (user) {
+      user.populate("addresses");
+      return res.status(200).json(responseFormat.format(user.addresses, true));
+    }
+    let msg = {
+      msg: "Something wrong, please try again",
+    };
+    return res.status(400).json(responseFormat.format([msg], false));
+  }),
 };
 
 module.exports = AddressController;
