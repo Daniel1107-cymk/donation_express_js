@@ -165,7 +165,15 @@ const UserController = {
     return res.status(200).json(responseFormat.format(user, true));
   }),
   validateEmail: asyncWrap(async (req, res) => {
-    let msg = {
+    let msg;
+    const user = User.findOne({ email: req.body.email });
+    if (user) {
+      msg = {
+        msg: "Email already exists",
+      };
+      return res.status(400).json(responseFormat.format([msg], true));
+    }
+    msg = {
       msg: "Valid email",
     };
     return res.status(200).json(responseFormat.format([msg], true));
