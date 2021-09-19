@@ -164,6 +164,12 @@ const UserController = {
     const user = await User.find({});
     return res.status(200).json(responseFormat.format(user, true));
   }),
+  validateEmail: asyncWrap(async (req, res) => {
+    let msg = {
+      msg: "Valid email",
+    };
+    return res.status(200).json(responseFormat.format([msg], true));
+  }),
 };
 
 module.exports = UserController;

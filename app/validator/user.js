@@ -37,3 +37,13 @@ exports.google_signin = [
     } else next();
   },
 ];
+
+exports.validate_email = [
+  check("email", "Invalid email").isEmail(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseFormat.format(errors.errors, false));
+    } else next();
+  },
+];

@@ -18,6 +18,11 @@ module.exports = (app) => {
     User.googleSignIn
   );
   // sign up
+  app.post(
+    `${apiPrefix}/validate-email`,
+    validate.validate_email,
+    User.validateEmail
+  );
   app.post(`${apiPrefix}/register`, validate.signup, User.signup);
   // update profile
   app.put(`${apiPrefix}/update-profile`, auth, User.updateProfile);
