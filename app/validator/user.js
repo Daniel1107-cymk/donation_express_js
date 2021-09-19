@@ -40,6 +40,9 @@ exports.google_signin = [
 
 exports.validate_email = [
   check("email", "Invalid email").isEmail(),
+  check("password", "Minimal password length is 8 character").isLength({
+    min: 8,
+  }),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
