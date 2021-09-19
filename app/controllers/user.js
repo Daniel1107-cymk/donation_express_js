@@ -96,7 +96,7 @@ const UserController = {
       const msg = [
         {
           msg: "Email already exist",
-          param: "password",
+          param: "email",
           location: "body",
         },
       ];
@@ -170,6 +170,7 @@ const UserController = {
     if (user) {
       msg = {
         msg: "Email already exists",
+        param: "email",
       };
       return res.status(400).json(responseFormat.format([msg], false));
     }
