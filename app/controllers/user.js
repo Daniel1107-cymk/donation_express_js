@@ -171,7 +171,7 @@ const UserController = {
       msg = {
         msg: "Email already exists",
       };
-      return res.status(400).json(responseFormat.format([msg], true));
+      return res.status(400).json(responseFormat.format([msg], false));
     }
     msg = {
       msg: "Valid email",
