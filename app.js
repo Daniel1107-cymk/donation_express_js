@@ -22,5 +22,6 @@ require("./app/routes/announcement")(app);
 require("./app/routes/donation")(app);
 require("./app/routes/faq")(app);
 require("./app/routes/address")(app);
+require("./app/routes/quote")(app);
 
 app.listen(PORT, () => {});
