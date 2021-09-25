@@ -122,6 +122,19 @@ const UserController = {
       return res.status(200).json(responseFormat.format(result, true));
     }
   }),
+  getProfile: asyncWrap(async (req, res) => {
+    const email = req.user.email;
+    const user = await User.findOne({email: email});
+    if(user) {
+      return res.status(200).json(responseFormat.format(user, true));
+    }
+    const msg = [
+      {
+        msg: "Failed, try again",
+      },
+    ];
+    return res.status(400).json(responseFormat.format(msg, false));
+  }),
   updateProfile: asyncWrap(async (req, res) => {
     const body = req.body;
     const user = req.user;

@@ -24,6 +24,8 @@ module.exports = (app) => {
     User.validateEmail
   );
   app.post(`${apiPrefix}/register`, validate.signup, User.signup);
+  // get profile
+  app.get(`${apiPrefix}/profile`, auth, User.getProfile);
   // update profile
   app.put(`${apiPrefix}/update-profile`, auth, User.updateProfile);
   // find single user by id
