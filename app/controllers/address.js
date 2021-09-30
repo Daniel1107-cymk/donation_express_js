@@ -36,10 +36,12 @@ const AddressController = {
     }
   }),
   update: asyncWrap(async (req, res) => {
+    const body = req.body;
     const address = await Address.findById(req.params.addressId);
     if (address) {
       const updatedAddress = await Address.findByIdAndUpdate(
         req.params.addressId,
+        body,
         { useFindAndModify: false, new: true }
       );
       msg = {
@@ -67,9 +69,10 @@ const AddressController = {
     return res.status(400).json(responseFormat.format([msg], false));
   }),
   getAllAddress: asyncWrap(async (req, res) => {
-    const user = User.findOne({ email: req.user.email });
+    const user = await User.findOne({ email: req.user.email }).populate(
+      "addresses"
+    );
     if (user) {
-      user.populate("addresses");
       return res.status(200).json(responseFormat.format(user.addresses, true));
     }
     let msg = {

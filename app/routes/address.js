@@ -10,7 +10,7 @@ const validate = require("../validator/address");
 
 module.exports = (app) => {
   // get all user address
-  app.get(`${apiPrefix}/all-address`, auth, Address.getAllAddress);
+  app.get(`${apiPrefix}/address`, auth, Address.getAllAddress);
   // create
   app.post(
     `${apiPrefix}/address`,
