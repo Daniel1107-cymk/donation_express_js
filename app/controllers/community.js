@@ -24,7 +24,7 @@ const CommunityController = {
     }
   }),
   getAllCommunity: asyncWrap(async (req, res) => {
-    const community = await Community.find({}, "-_id, -__v");
+    const community = await Community.find({}, "name banner");
     if (community) {
       return res.status(200).json(responseFormat.format(community, true));
     }
