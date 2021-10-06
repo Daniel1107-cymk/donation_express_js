@@ -5,6 +5,7 @@ exports.createAddress = [
   check("address", "Is required").notEmpty(),
   check("city", "Is required").notEmpty(),
   check("zipcode", "Is required").notEmpty(),
+  check("zipcode", "Invalid zipcode").isNumeric(),
   (req, res, next) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
