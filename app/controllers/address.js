@@ -18,7 +18,7 @@ const AddressController = {
         city: body.city,
         zipcode: body.zipcode,
         longitude: body.longitude,
-        latitude: body.latidude,
+        latitude: body.latitude,
       });
       if (address) {
         user.addresses.push(address);
