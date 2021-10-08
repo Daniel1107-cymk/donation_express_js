@@ -24,6 +24,8 @@ module.exports = (app) => {
     User.validateEmail
   );
   app.post(`${apiPrefix}/register`, validate.signup, User.signup);
+  // logout
+  app.post(`${apiPrefix}/logout`, auth, User.logout);
   // get profile
   app.get(`${apiPrefix}/profile`, auth, User.getProfile);
   // update profile

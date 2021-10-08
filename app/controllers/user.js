@@ -204,6 +204,25 @@ const UserController = {
     };
     return res.status(200).json(responseFormat.format([msg], true));
   }),
+  logout: asyncWrap(async (req, res) => {
+    const user = await User.findOne({ email: req.user.email });
+    let msg;
+    if (user) {
+      user.token = "";
+      await user.save();
+      msg = {
+        msg: "Logout success",
+      };
+      return res.status(200).json(responseFormat.format(msg, true));
+    } else {
+      msg = [
+        {
+          msg: "Unauthorized",
+        },
+      ];
+      return res.status(401).json(responseFormat.format(msg, false));
+    }
+  }),
 };
 
 module.exports = UserController;
