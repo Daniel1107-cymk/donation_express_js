@@ -8,6 +8,7 @@ const userSchema = mongoose.Schema(
     last_name: { type: String, default: "" },
     phone_number: { type: String, required: true },
     role: { type: String, default: 0 },
+    token: { type: String },
     google_id: { type: String, default: null },
     donations: [{ type: mongoose.Schema.Types.ObjectId, ref: "donations" }],
     addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: "addresses" }],

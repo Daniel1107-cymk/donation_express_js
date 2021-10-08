@@ -11,12 +11,15 @@ const UserController = {
     const user = await User.findOne({ email: body.email });
     if (user) {
       if (user && byscrypt.compareSync(body.password, user.password)) {
+        const token = generate.token({
+          userId: user._id,
+          email: user.email,
+        });
         const result = {
-          token: generate.token({
-            userId: user._id,
-            email: user.email,
-          }),
+          token: token,
         };
+        user.token = token;
+        await user.save();
         return res.status(200).json(responseFormat.format(result, true));
       } else {
         const msg = [
@@ -47,12 +50,15 @@ const UserController = {
       google_id: body.google_id,
     });
     if (checkEmailandGoogleIdUser) {
+      const token = generate.token({
+        userId: checkEmailandGoogleIdUser._id,
+        email: checkEmailandGoogleIdUser.email,
+      });
       const result = {
-        token: generate.token({
-          userId: checkEmailandGoogleIdUser._id,
-          email: checkEmailandGoogleIdUser.email,
-        }),
+        token: token,
       };
+      checkEmailandGoogleIdUser.token = token;
+      await checkEmailandGoogleIdUser.save();
       return res.status(200).json(responseFormat.format(result, true));
     }
     const checkEmailUser = await User.findOne({
@@ -78,12 +84,15 @@ const UserController = {
       google_id: body.google_id,
     });
     if (createUserWithGoogleId) {
+      const token = generate.token({
+        userId: createUserWithGoogleId._id,
+        email: body.email,
+      });
       const result = {
-        token: generate.token({
-          userId: createUserWithGoogleId._id,
-          email: body.email,
-        }),
+        token: token,
       };
+      createUserWithGoogleId.token = token;
+      await createUserWithGoogleId.save();
 
       return res.status(200).json(responseFormat.format(result, true));
     }
@@ -113,19 +122,22 @@ const UserController = {
       google_id: body.google_id,
     });
     if (newUser) {
+      const token = generate.token({
+        userId: newUser._id,
+        email: newUser.email,
+      });
       const result = {
-        token: generate.token({
-          userId: newUser._id,
-          email: newUser.email,
-        }),
+        token: token,
       };
+      newUser.token = token;
+      await newUser.save();
       return res.status(200).json(responseFormat.format(result, true));
     }
   }),
   getProfile: asyncWrap(async (req, res) => {
     const email = req.user.email;
-    const user = await User.findOne({email: email});
-    if(user) {
+    const user = await User.findOne({ email: email });
+    if (user) {
       return res.status(200).json(responseFormat.format(user, true));
     }
     const msg = [
