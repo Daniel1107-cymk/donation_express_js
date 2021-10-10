@@ -10,6 +10,7 @@ const communitySchema = mongoose.Schema(
     address: { type: String, required: true },
     banner: { type: String },
     mimetype: { type: String },
+    donations: [{ type: mongoose.Schema.Types.ObjectId, ref: "donations" }],
   },
   { timestamps: { createdAt: "created_at" } }
 );
