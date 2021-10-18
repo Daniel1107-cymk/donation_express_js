@@ -24,7 +24,10 @@ const CommunityController = {
     }
   }),
   getAllCommunity: asyncWrap(async (req, res) => {
-    const community = await Community.find({}, "name banner mimetype");
+    const community =
+      req.query.max !== undefined
+        ? await Community.find({}, "name").limit(parseInt(req.query.max))
+        : await Community.find({}, "name banner mimetype");
     if (community) {
       return res.status(200).json(responseFormat.format(community, true));
     }
