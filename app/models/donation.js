@@ -8,25 +8,30 @@ const donationSchema = mongoose.Schema(
     category: { type: String, required: true },
     total_quantity: { type: Number, default: 0, required: true },
     total_weight: { type: Number, default: 0 },
-    pickup_date: { type: Date, require: true },
+    pickup_date: { type: Date, required: true },
+    address: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "addresses",
+      required: true,
+    },
     donation_details: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "donation_details",
-        require: true,
+        required: true,
       },
     ],
     donation_images: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "donation_images",
-        require: true,
+        required: true,
       },
     ],
     community: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "communities",
-      require: true,
+      required: true,
     },
   },
   { timestamps: { createdAt: "created_at" } }
