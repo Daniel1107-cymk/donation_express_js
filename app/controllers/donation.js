@@ -59,6 +59,9 @@ const DonationController = {
     const donation = await Donation.create({
       user: userId,
       community: body.community,
+      recipient_name: body.recipient_name,
+      phone_number: body.phone_number,
+      category: body.category,
       total_quantity: totalQuantity,
       total_weight: totalWeight,
       pickup_date: Date.now(),
