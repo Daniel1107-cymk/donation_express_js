@@ -15,7 +15,7 @@ module.exports = (app) => {
   app.post(
     `${apiPrefix}/donation`,
     auth,
-    // cpUpload,
+    cpUpload,
     validate.donationData,
     Donation.create
   );
