@@ -23,6 +23,20 @@ const QuoteController = {
       return res.status(200).json(responseFormat.format(quotes, true));
     }
   }),
+  deleteQuote: asyncWrap(async (req, res) => {
+    const quote = await Quote.findById(req.params.quoteId);
+    if (quote) {
+      quote.delete();
+      msg = {
+        msg: "Successfully delete",
+      };
+      return res.status(200).json(responseFormat.format([msg], true));
+    }
+    msg = {
+      msg: "No address found",
+    };
+    return res.status(400).json(responseFormat.format([msg], false));
+  }),
 };
 
 module.exports = QuoteController;

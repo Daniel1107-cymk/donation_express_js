@@ -21,4 +21,5 @@ module.exports = (app) => {
   );
   // get all quote
   app.get(`${apiPrefix}/quote`, auth, Quote.getAllQuote);
+  app.delete(`${apiPrefix}/quote/:quoteId`, auth, Quote.deleteQuote);
 };
