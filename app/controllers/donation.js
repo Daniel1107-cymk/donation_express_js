@@ -1,3 +1,4 @@
+const Address = require("../models/address");
 const Donation = require("../models/donation");
 const Community = require("../models/community");
 const DonationDetail = require("../models/donation.detail");
@@ -129,6 +130,27 @@ const DonationController = {
     ];
 
     return res.status(200).json(responseFormat.format(msg, true));
+  }),
+  getAllDonation: asyncWrap(async (req, res) => {
+    const currentUserEmail = req.user.email;
+    const user = await User.findOne({ email: currentUserEmail }).populate(
+      "donations",
+      "recipient_name pickup_date status address"
+    );
+    if (user) {
+      for (let i = 0; i < user.donations.length; i++) {
+        const address = await Address.findById(
+          user.donations[i].address,
+          "address"
+        );
+        user.donations[i].address = address;
+      }
+      return res.status(200).json(responseFormat.format(user.donations, true));
+    }
+    let msg = {
+      msg: "Something wrong, please try again",
+    };
+    return res.status(400).json(responseFormat.format([msg], false));
   }),
 };
 

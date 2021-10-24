@@ -19,4 +19,6 @@ module.exports = (app) => {
     validate.donationData,
     Donation.create
   );
+  // get all user donation
+  app.get(`${apiPrefix}/donation`, auth, Donation.getAllDonation);
 };
