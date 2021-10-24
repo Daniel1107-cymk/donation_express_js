@@ -9,6 +9,7 @@ const donationSchema = mongoose.Schema(
     total_quantity: { type: Number, default: 0, required: true },
     total_weight: { type: Number, default: 0 },
     pickup_date: { type: Date, required: true },
+    status: { type: String, default: "Pending" },
     address: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "addresses",

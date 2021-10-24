@@ -12,7 +12,7 @@ const DonationController = {
     const body = JSON.parse(JSON.stringify(req.body));
     const files = req.files;
     const currentUserEmail = req.user.email;
-    const userId = await User.findOne({ email: currentUserEmail }, "_id");
+    const user = await User.findOne({ email: currentUserEmail });
     const community = await Community.findById(body.community);
     let totalQuantity = 0;
     let totalWeight = 0;
@@ -37,9 +37,9 @@ const DonationController = {
       return res.status(422).json(responseFormat.format(msg, false));
     }
 
-    const donation_details = body.donation_details;
+    const donation_details = JSON.parse(body.donation_details);
     for (let i = 0; i < donation_details.length; i++) {
-      let details = JSON.parse(donation_details[i]);
+      let details = donation_details[i];
       donationDetails.push({
         product_name: details.product_name,
         quantity: details.quantity,
@@ -58,7 +58,7 @@ const DonationController = {
     }
 
     const donation = await Donation.create({
-      user: userId,
+      user: user._id,
       community: body.community,
       address: body.address,
       recipient_name: body.recipient_name,
@@ -71,7 +71,9 @@ const DonationController = {
 
     if (donation) {
       community.donations.push(donation);
+      user.donations.push(donation);
       await community.save();
+      await user.save();
 
       for (let i = 0; i < donationDetails.length; i++) {
         const donationDetail = await DonationDetail.create({
