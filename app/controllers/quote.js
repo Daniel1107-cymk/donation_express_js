@@ -33,7 +33,7 @@ const QuoteController = {
       return res.status(200).json(responseFormat.format([msg], true));
     }
     msg = {
-      msg: "No address found",
+      msg: "No quote found",
     };
     return res.status(400).json(responseFormat.format([msg], false));
   }),
