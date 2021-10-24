@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const donationImageSchema = mongoose.Schema(
   {
     donation: { type: mongoose.Schema.Types.ObjectId, ref: "donations" },
-    fileName: { type: String, require: true },
     image: { type: String, require: true },
+    mimetype: { type: String, required: true },
   },
   { timestamps: { createdAt: "created_at" } }
 );

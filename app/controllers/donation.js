@@ -9,7 +9,7 @@ const responseFormat = require("../helpers/response.format");
 
 const DonationController = {
   create: asyncWrap(async (req, res) => {
-    const body = req.body;
+    const body = JSON.parse(JSON.stringify(req.body));
     const files = req.files;
     const currentUserEmail = req.user.email;
     const userId = await User.findOne({ email: currentUserEmail }, "_id");
@@ -39,26 +39,28 @@ const DonationController = {
 
     const donation_details = body.donation_details;
     for (let i = 0; i < donation_details.length; i++) {
+      let details = JSON.parse(donation_details[i]);
       donationDetails.push({
-        product_name: donation_details[i].product_name,
-        quantity: donation_details[i].quantity,
-        weight: donation_details[i].weight,
+        product_name: details.product_name,
+        quantity: details.quantity,
+        weight: details.weight,
       });
-      totalQuantity += donation_details[i].quantity;
-      totalWeight += donation_details[i].weight;
+      totalQuantity += details.quantity;
+      totalWeight += details.weight;
     }
 
     const donation_images = files.images;
     for (let i = 0; i < donation_images.length; i++) {
       donationImages.push({
-        fileName: donation_images[i].originalName,
-        image: donation_images[i].buffer,
+        image: donation_images[i].buffer.toString("base64"),
+        mimetype: donation_images[i].mimetype,
       });
     }
 
     const donation = await Donation.create({
       user: userId,
       community: body.community,
+      address: body.address,
       recipient_name: body.recipient_name,
       phone_number: body.phone_number,
       category: body.category,
@@ -73,7 +75,7 @@ const DonationController = {
 
       for (let i = 0; i < donationDetails.length; i++) {
         const donationDetail = await DonationDetail.create({
-          ...donationDetails,
+          ...donationDetails[i],
           donation: donation.id,
         });
         if (donationDetail) {
@@ -92,7 +94,7 @@ const DonationController = {
 
       for (let i = 0; i < donationImages.length; i++) {
         const donationImage = await DonationImage.create({
-          ...donationImages,
+          ...donationImages[i],
           donation: donation.id,
         });
         if (donationImage) {
