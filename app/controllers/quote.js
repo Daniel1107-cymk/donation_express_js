@@ -11,7 +11,7 @@ const QuoteController = {
       title: body.title,
       description: body.description,
       image: file.buffer.toString("base64"),
-      type: file.mimetype,
+      mimetype: file.mimetype,
     });
     if (quote) {
       return res.status(200).json(responseFormat.format(quote, true));
