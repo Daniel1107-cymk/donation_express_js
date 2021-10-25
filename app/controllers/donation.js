@@ -148,6 +148,39 @@ const DonationController = {
     };
     return res.status(400).json(responseFormat.format([msg], false));
   }),
+  getDonation: asyncWrap(async (req, res) => {
+    const donation = await Donation.findById(
+      req.params.donationId,
+      "-created_at -updatedAt -__v -user"
+    ).populate([
+      {
+        path: "address",
+        select: "address",
+      },
+      {
+        path: "donation_details",
+        select: "quantity product_name weight",
+      },
+      {
+        path: "community",
+        select: "name",
+      },
+      {
+        path: "donation_images",
+        select: "-_id -__v -created_at -updatedAt",
+      },
+    ]);
+    if (donation) {
+      return res.status(200).json(responseFormat.format(donation, true));
+    } else {
+      const msg = [
+        {
+          msg: "Donation not found",
+        },
+      ];
+      return res.status(404).json(responseFormat.format(msg, false));
+    }
+  }),
 };
 
 module.exports = DonationController;

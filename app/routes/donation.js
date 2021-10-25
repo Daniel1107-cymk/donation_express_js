@@ -21,4 +21,6 @@ module.exports = (app) => {
   );
   // get all user donation
   app.get(`${apiPrefix}/donation`, auth, Donation.getAllDonation);
+  // get single donation details
+  app.get(`${apiPrefix}/donation/:donationId`, auth, Donation.getDonation);
 };
