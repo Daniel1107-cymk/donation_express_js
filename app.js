@@ -24,5 +24,6 @@ require("./app/routes/faq")(app);
 require("./app/routes/address")(app);
 require("./app/routes/quote")(app);
 require("./app/routes/community")(app);
+require("./app/routes/category")(app);
 
 app.listen(PORT, () => {});
