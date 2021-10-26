@@ -1,4 +1,4 @@
-const Address = require("../models/address");
+const Category = require("../models/category");
 const Donation = require("../models/donation");
 const Community = require("../models/community");
 const DonationDetail = require("../models/donation.detail");
@@ -15,6 +15,7 @@ const DonationController = {
     const currentUserEmail = req.user.email;
     const user = await User.findOne({ email: currentUserEmail });
     const community = await Community.findById(body.community);
+    const category = await Category.findById(body.category);
     let totalQuantity = 0;
     let totalWeight = 0;
     let donationDetails = [];
@@ -31,11 +32,19 @@ const DonationController = {
     } else if (!community) {
       let msg = [
         {
-          msg: "Invalid community id",
+          msg: "No community found",
           location: "body",
         },
       ];
-      return res.status(422).json(responseFormat.format(msg, false));
+      return res.status(404).json(responseFormat.format(msg, false));
+    } else if (!category) {
+      let msg = [
+        {
+          msg: "No category found",
+          location: "body",
+        },
+      ];
+      return res.status(404).json(responseFormat.format(msg, false));
     }
 
     const donation_details = JSON.parse(body.donation_details);
@@ -73,8 +82,10 @@ const DonationController = {
     if (donation) {
       community.donations.push(donation);
       user.donations.push(donation);
+      category.donations.push(donation);
       await community.save();
       await user.save();
+      await category.save();
 
       for (let i = 0; i < donationDetails.length; i++) {
         const donationDetail = await DonationDetail.create({
