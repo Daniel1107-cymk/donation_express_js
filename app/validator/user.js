@@ -29,7 +29,19 @@ exports.login = [
 
 exports.google_signin = [
   check("email", "Invalid email").isEmail(),
-  check("google_id", "Something went wrong").notEmpty(),
+  check("google_id", "Google id required").notEmpty(),
+  check("first_name", "Is required").notEmpty(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseFormat.format(errors.errors, false));
+    } else next();
+  },
+];
+
+exports.binding_account = [
+  check("email", "Invalid email").isEmail(),
+  check("google_id", "Google id required").notEmpty(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

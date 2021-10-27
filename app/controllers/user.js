@@ -60,41 +60,69 @@ const UserController = {
       checkEmailandGoogleIdUser.token = token;
       await checkEmailandGoogleIdUser.save();
       return res.status(200).json(responseFormat.format(result, true));
+    } else {
+      const checkEmailUser = await User.findOne(
+        {
+          email: body.email,
+        },
+        "email first_name last_name -_id"
+      );
+      if (checkEmailUser) {
+        const msg = {
+          msg: "Email exists",
+          data: checkEmailUser,
+        };
+        return res.status(200).json(responseFormat.format(msg, true));
+      } else {
+        const createUserWithGoogleId = await User.create({
+          email: body.email,
+          first_name: body.first_name,
+          last_name: body.last_name,
+          password: generate.randomPassword(8),
+          role: body.role,
+          google_id: body.google_id,
+        });
+        if (createUserWithGoogleId) {
+          const token = generate.token({
+            userId: createUserWithGoogleId._id,
+            email: body.email,
+          });
+          const result = {
+            token: token,
+          };
+          createUserWithGoogleId.token = token;
+          await createUserWithGoogleId.save();
+
+          return res.status(200).json(responseFormat.format(result, true));
+        }
+      }
     }
+  }),
+  bindAccount: asyncWrap(async (req, res) => {
+    const body = req.body;
     const checkEmailUser = await User.findOne({
       email: body.email,
     });
     if (checkEmailUser) {
-      const msg = [
-        {
-          msg: "Google signin failed, try login with email and password",
-          param: "password",
-          location: "body",
-        },
-      ];
-      return res.status(400).json(responseFormat.format(msg, false));
-    }
-    const createUserWithGoogleId = await User.create({
-      email: body.email,
-      first_name: body.first_name,
-      last_name: body.last_name,
-      phone_number: body.phone_number,
-      full_address: body.full_address,
-      role: body.role,
-      google_id: body.google_id,
-    });
-    if (createUserWithGoogleId) {
       const token = generate.token({
-        userId: createUserWithGoogleId._id,
+        userId: checkEmailUser._id,
         email: body.email,
       });
       const result = {
         token: token,
       };
-      createUserWithGoogleId.token = token;
-      await createUserWithGoogleId.save();
+      checkEmailUser.token = token;
+      checkEmailUser.google_id = body.google_id;
+      await checkEmailUser.save();
 
       return res.status(200).json(responseFormat.format(result, true));
+    } else {
+      const msg = [
+        {
+          msg: "Failed, try again",
+        },
+      ];
+      return res.status(400).json(responseFormat.format(msg, false));
     }
   }),
   signup: asyncWrap(async (req, res) => {
@@ -117,7 +145,6 @@ const UserController = {
       first_name: body.first_name,
       last_name: body.last_name,
       phone_number: body.phone_number,
-      full_address: body.full_address,
       role: body.role,
       google_id: body.google_id,
     });

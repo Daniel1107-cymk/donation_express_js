@@ -17,6 +17,12 @@ module.exports = (app) => {
     validate.google_signin,
     User.googleSignIn
   );
+  // binding to existing account
+  app.post(
+    `${apiPrefix}/binding-account`,
+    validate.binding_account,
+    User.bindAccount
+  );
   // sign up
   app.post(
     `${apiPrefix}/validate-email`,
