@@ -7,6 +7,8 @@ const userSchema = mongoose.Schema(
     first_name: { type: String, required: true },
     last_name: { type: String, default: "" },
     phone_number: { type: String },
+    picture: { type: String },
+    mimetype: { type: String },
     role: { type: String, default: 0 },
     token: { type: String },
     google_id: { type: String, default: null },

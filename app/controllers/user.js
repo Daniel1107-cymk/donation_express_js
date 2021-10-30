@@ -176,12 +176,24 @@ const UserController = {
   }),
   updateProfile: asyncWrap(async (req, res) => {
     const body = req.body;
+    const file = req.file;
     const user = req.user;
-    const data = {
-      first_name: body.first_name,
-      last_name: body.last_name,
-      phone_number: body.phone_number,
-    };
+    let data;
+    if (file !== undefined) {
+      data = {
+        first_name: body.first_name,
+        last_name: body.last_name,
+        phone_number: body.phone_number,
+        picture: file.buffer.toString("base64"),
+        mimetype: file.mimetype,
+      };
+    } else {
+      data = {
+        first_name: body.first_name,
+        last_name: body.last_name,
+        phone_number: body.phone_number,
+      };
+    }
     const updatedProfile = await User.findOneAndUpdate(user.email, data, {
       useFindAndModify: false,
       new: true,

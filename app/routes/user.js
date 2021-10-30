@@ -1,3 +1,5 @@
+const multer = require("multer");
+const upload = multer();
 // env
 require("dotenv").config();
 const apiPrefix = process.env.API_PREFIX;
@@ -9,6 +11,7 @@ const User = require("../controllers/user");
 const validate = require("../validator/user");
 
 module.exports = (app) => {
+  const cpUpdload = upload.single("picture");
   // login
   app.post(`${apiPrefix}/login`, validate.login, User.login);
   // login with google
@@ -35,7 +38,13 @@ module.exports = (app) => {
   // get profile
   app.get(`${apiPrefix}/profile`, auth, User.getProfile);
   // update profile
-  app.put(`${apiPrefix}/update-profile`, auth, User.updateProfile);
+  app.put(
+    `${apiPrefix}/update-profile`,
+    auth,
+    cpUpdload,
+    validate.update_profile,
+    User.updateProfile
+  );
   // find single user by id
   app.get(`${apiPrefix}/users/:userId`, auth, User.getUser);
   // select all user

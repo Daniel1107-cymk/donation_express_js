@@ -62,3 +62,14 @@ exports.validate_email = [
     } else next();
   },
 ];
+
+exports.update_profile = [
+  check("first_name", "First name is required").notEmpty(),
+  check("phone_number", "Is required").notEmpty(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseFormat.format(errors.errors, false));
+    } else next();
+  },
+];
