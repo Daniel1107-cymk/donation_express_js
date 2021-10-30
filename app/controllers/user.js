@@ -194,14 +194,22 @@ const UserController = {
         phone_number: body.phone_number,
       };
     }
-    const updatedProfile = await User.findOneAndUpdate(user.email, data, {
-      useFindAndModify: false,
-      new: true,
-    });
+    let msg;
+    const updatedProfile = await User.findOneAndUpdate(
+      { email: user.email },
+      data,
+      {
+        useFindAndModify: false,
+        new: true,
+      }
+    );
     if (updatedProfile) {
+      msg = {
+        msg: "Successfully update",
+      };
       return res.status(200).json(responseFormat.format(updatedProfile, true));
     } else {
-      const msg = [
+      msg = [
         {
           msg: "Failed, try again",
         },
